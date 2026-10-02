@@ -1,0 +1,17 @@
+{
+  "name": "中学英語クイズ",
+  "short_name": "英語クイズ",
+  "description": "英検5級〜準2級の単語と中学文法の4択クイズ",
+  "lang": "ja",
+  "start_url": "./ver1.1.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#f2f6fc",
+  "theme_color": "#2563eb",
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "icons/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

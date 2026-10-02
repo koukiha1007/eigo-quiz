@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>データチェック｜中学英語クイズ</title>
+<style>
+  body { margin: 0; padding: 16px; background: #f2f6fc; color: #1c2733; font: 16px/1.6 "Hiragino Sans", "Yu Gothic UI", "Meiryo", system-ui, sans-serif; }
+  main { max-width: 960px; margin: 0 auto; }
+  h1 { margin: 0 0 4px; font-size: 24px; }
+  h2 { margin: 28px 0 8px; font-size: 19px; border-left: 6px solid #2563eb; padding-left: 10px; }
+  p { margin: 4px 0; }
+  .muted { color: #566679; font-size: 14px; }
+  #summary { margin: 14px 0; padding: 14px 16px; border-radius: 12px; font-size: 22px; font-weight: 800; border: 2px solid; }
+  #summary.ok { background: #e4f6ea; border-color: #2fae63; color: #14803f; }
+  #summary.ng { background: #fdeaea; border-color: #e45757; color: #c62828; }
+  #summary small { display: block; font-size: 15px; font-weight: 400; color: #1c2733; }
+  table { border-collapse: collapse; width: 100%; background: #fff; margin: 6px 0; }
+  th, td { border: 1px solid #cfdaea; padding: 6px 10px; text-align: left; font-size: 15px; vertical-align: top; }
+  th { background: #e7efff; }
+  td.num { text-align: right; font-variant-numeric: tabular-nums; }
+  .pass { color: #14803f; font-weight: 700; }
+  .warn { color: #a15c00; font-weight: 700; background: #fff4d6; }
+  .fail { color: #c62828; font-weight: 700; background: #fdeaea; }
+  ul.msgs { margin: 6px 0; padding-left: 22px; }
+  ul.msgs li { margin: 2px 0; font-size: 15px; }
+  .scroll { overflow-x: auto; }
+  code { background: #e9eef6; padding: 0 4px; border-radius: 4px; }
+</style>
+</head>
+<body>
+<main>
+  <h1>データチェック</h1>
+  <p class="muted">単語と文法のデータをすべて読み込んで、次をチェックします。エラーが 0 件になるまで直してください。</p>
+  <div id="summary">チェック中…</div>
+  <div id="report"></div>
+</main>
+
+<script>window.__loadErrors = [];</script>
+<script src="../data/words_5.js" onerror="window.__loadErrors.push('data/words_5.js')"></script>
+<script src="../data/words_4.js" onerror="window.__loadErrors.push('data/words_4.js')"></script>
+<script src="../data/words_3.js" onerror="window.__loadErrors.push('data/words_3.js')"></script>
+<script src="../data/words_p2.js" onerror="window.__loadErrors.push('data/words_p2.js')"></script>
+<script src="../data/grammar/01_be.js" onerror="window.__loadErrors.push('data/grammar/01_be.js')"></script>
+<script src="../data/grammar/02_present.js" onerror="window.__loadErrors.push('data/grammar/02_present.js')"></script>
+<script src="../data/grammar/03_pronoun.js" onerror="window.__loadErrors.push('data/grammar/03_pronoun.js')"></script>
+<script src="../data/grammar/04_wh.js" onerror="window.__loadErrors.push('data/grammar/04_wh.js')"></script>
+<script src="../data/grammar/05_imperative.js" onerror="window.__loadErrors.push('data/grammar/05_imperative.js')"></script>
+<script src="../data/grammar/06_present_prog.js" onerror="window.__loadErrors.push('data/grammar/06_present_prog.js')"></script>
+<script src="../data/grammar/07_past.js" onerror="window.__loadErrors.push('data/grammar/07_past.js')"></script>
+<script src="../data/grammar/08_past_prog.js" onerror="window.__loadErrors.push('data/grammar/08_past_prog.js')"></script>
+<script src="../data/grammar/09_future.js" onerror="window.__loadErrors.push('data/grammar/09_future.js')"></script>
+<script src="../data/grammar/10_modal.js" onerror="window.__loadErrors.push('data/grammar/10_modal.js')"></script>
+<script src="../data/grammar/11_infinitive.js" onerror="window.__loadErrors.push('data/grammar/11_infinitive.js')"></script>
+<script src="../data/grammar/12_gerund.js" onerror="window.__loadErrors.push('data/grammar/12_gerund.js')"></script>
+<script src="../data/grammar/13_comparison.js" onerror="window.__loadErrors.push('data/grammar/13_comparison.js')"></script>
+<script src="../data/grammar/14_conjunction.js" onerror="window.__loadErrors.push('data/grammar/14_conjunction.js')"></script>
+<script src="../data/grammar/15_passive.js" onerror="window.__loadErrors.push('data/grammar/15_passive.js')"></script>
+<script src="../data/grammar/16_perfect.js" onerror="window.__loadErrors.push('data/grammar/16_perfect.js')"></script>
+<script src="../data/grammar/17_participle.js" onerror="window.__loadErrors.push('data/grammar/17_participle.js')"></script>
+<script src="../data/grammar/18_relative.js" onerror="window.__loadErrors.push('data/grammar/18_relative.js')"></script>
+<script src="../data/grammar/19_indirect.js" onerror="window.__loadErrors.push('data/grammar/19_indirect.js')"></script>
+<script src="../data/grammar/20_subjunctive.js" onerror="window.__loadErrors.push('data/grammar/20_subjunctive.js')"></script>
+<script src="../js/quiz.js"></script>
+<script>
+(function () {
+  'use strict';
+
+  var MIN_WORDS = 300;     // 1つの級の最低語数
+  var MIN_GRAMMAR = 10;    // 1単元×1レベルの最低問題数
+
+  var WORDS = window.WORDS || [];
+  var GRAMMAR = window.GRAMMAR || [];
+  var Quiz = window.EIQQuiz;
+  var errors = [];
+  var warnings = [];
+
+  function err(m) { errors.push(m); }
+  function warn(m) { warnings.push(m); }
+  function esc(s) {
+    return String(s).replace(/[&<>"']/g, function (c) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+    });
+  }
+  function blank(v) { return typeof v !== 'string' || v.trim() === ''; }
+  function label(w) { return w && w.id ? w.id : '(idなし)'; }
+
+  var POS = Object.keys(Quiz.POS_LABEL);
+  var LEVELS = Quiz.WORD_LEVELS;
+  var GLEVELS = Quiz.GRAMMAR_LEVELS;
+  var UNIT_COUNT = Quiz.GRAMMAR_UNITS.length;
+  var levelLabel = {};
+  LEVELS.forEach(function (l) { levelLabel[l.key] = l.label; });
+
+  // ---------- 読み込み ----------
+  window.__loadErrors.forEach(function (f) { err('ファイルを読み込めませんでした：' + f); });
+  if (!Quiz) { err('js/quiz.js を読み込めませんでした。'); }
+
+  // ---------- 単語 ----------
+  var wordRows = [];
+  var idSeen = {};
+  var wordSeen = {};   // 小文字の単語 -> [{ level, id }]
+
+  WORDS.forEach(function (w) {
+    var tag = label(w);
+    ['id', 'level', 'word', 'meaning', 'pos', 'example', 'exampleJa'].forEach(function (f) {
+      if (blank(w[f])) err(tag + '：' + f + ' が空です。');
+    });
+    if (!levelLabel[w.level]) { err(tag + '：level が "5" "4" "3" "p2" のどれでもありません（' + w.level + '）。'); return; }
+    if (!blank(w.pos) && POS.indexOf(w.pos) < 0) err(tag + '：pos の値が正しくありません（' + w.pos + '）。');
+
+    if (!blank(w.id)) {
+      var lv = LEVELS.filter(function (l) { return l.key === w.level; })[0];
+      if (!new RegExp('^' + lv.idPrefix + '-\\d{3}$').test(w.id)) {
+        err(tag + '：id の形式が正しくありません。' + lv.label + ' は ' + lv.idPrefix + '-001 の形です。');
+      }
+      if (idSeen[w.id]) err('id が重複しています：' + w.id);
+      idSeen[w.id] = true;
+    }
+
+    if (!blank(w.word)) {
+      if (/\s/.test(w.word.trim())) err(tag + '：熟語（スペースを含む）は入れられません（' + w.word + '）。');
+      var key = w.word.trim().toLowerCase();
+      (wordSeen[key] = wordSeen[key] || []).push({ level: w.level, id: w.id });
+      if (!blank(w.example)) {
+        var ex = w.example.toLowerCase();
+        var stem = key.length <= 3 ? key : key.slice(0, Math.max(3, key.length - 2));
+        if (ex.indexOf(stem) < 0) warn(tag + '：例文に単語（' + w.word + '）が見つかりません。');
+      }
+    }
+    if (!blank(w.meaning) && w.meaning.length > 20) warn(tag + '：意味が長すぎます（' + w.meaning + '）。');
+  });
+
+  Object.keys(wordSeen).forEach(function (k) {
+    var hits = wordSeen[k];
+    if (hits.length < 2) return;
+    var levels = {};
+    hits.forEach(function (h) { levels[h.level] = (levels[h.level] || 0) + 1; });
+    var keys = Object.keys(levels);
+    var where = hits.map(function (h) { return h.id + '（' + levelLabel[h.level] + '）'; }).join('、');
+    if (keys.length > 1) err('級をまたいで単語が重複しています："' + k + '" … ' + where);
+    keys.forEach(function (lk) {
+      if (levels[lk] > 1) err('同じ級の中で単語が重複しています："' + k + '" … ' + where);
+    });
+  });
+
+  LEVELS.forEach(function (lv) {
+    var list = WORDS.filter(function (w) { return w.level === lv.key; });
+    var pos = {};
+    list.forEach(function (w) { pos[w.pos] = (pos[w.pos] || 0) + 1; });
+    var short = list.length < MIN_WORDS;
+    if (short) warn(lv.label + '：単語が ' + list.length + ' 語です（' + MIN_WORDS + '語以上にしてください）。');
+    wordRows.push({ lv: lv, n: list.length, short: short, pos: pos, list: list });
+  });
+
+  // ---------- 文法 ----------
+  var gSeen = {};
+  var gCount = {};      // 'unit/level' -> 問題数
+  var qSeen = {};
+
+  GRAMMAR.forEach(function (g) {
+    var tag = label(g);
+    ['id', 'level', 'question', 'explanation'].forEach(function (f) {
+      if (blank(g[f])) err(tag + '：' + f + ' が空です。');
+    });
+    var unitOk = typeof g.unit === 'number' && g.unit >= 1 && g.unit <= UNIT_COUNT && g.unit % 1 === 0;
+    var level = GLEVELS.filter(function (l) { return l.key === g.level; })[0];
+    if (!unitOk) err(tag + '：unit が 1〜' + UNIT_COUNT + ' の整数ではありません（' + g.unit + '）。');
+    if (!level) err(tag + '：level が "normal" "advanced" "hard" のどれでもありません（' + g.level + '）。');
+
+    if (!blank(g.id)) {
+      var m = /^g(\d{2})-([nah])-(\d{2,})$/.exec(g.id);
+      if (!m) {
+        err(tag + '：id の形式が正しくありません（g01-n-01 の形）。');
+      } else {
+        if (unitOk && Number(m[1]) !== g.unit) err(tag + '：id の単元番号と unit が合っていません。');
+        if (level && m[2] !== level.code) err(tag + '：id のレベル文字と level が合っていません。');
+      }
+      if (gSeen[g.id]) err('id が重複しています：' + g.id);
+      gSeen[g.id] = true;
+    }
+
+    var cs = g.choices;
+    if (!Array.isArray(cs) || cs.length !== 4) {
+      err(tag + '：choices が4つではありません。');
+    } else {
+      if (cs.some(blank)) err(tag + '：choices に空の選択肢があります。');
+      var uniq = {};
+      var ci = {};
+      cs.forEach(function (c) {
+        var t = String(c).trim();
+        uniq[t] = (uniq[t] || 0) + 1;
+        ci[t.toLowerCase()] = (ci[t.toLowerCase()] || 0) + 1;
+      });
+      if (Object.keys(uniq).length < 4) err(tag + '：choices に同じ選択肢があります。');
+      else if (Object.keys(ci).length < 4) warn(tag + '：choices に、大文字小文字だけが違う選択肢があります。');
+    }
+    if (!(typeof g.answer === 'number' && g.answer % 1 === 0 && g.answer >= 0 && g.answer <= 3)) {
+      err(tag + '：answer が 0〜3 の整数ではありません（' + g.answer + '）。');
+    } else if (Array.isArray(cs) && cs.length !== 4 && g.answer >= cs.length) {
+      err(tag + '：answer が choices の範囲外です。');
+    }
+
+    if (!blank(g.question)) {
+      if (!/\(\s*\)/.test(g.question)) warn(tag + '：問題文に空所 ( ) がありません。');
+      var qk = g.question + '|' + (Array.isArray(cs) ? cs.join('/') : '');
+      if (qSeen[qk]) warn(tag + '：' + qSeen[qk] + ' と問題・選択肢が同じです。');
+      qSeen[qk] = tag;
+    }
+    if (unitOk && level) {
+      var k = g.unit + '/' + g.level;
+      gCount[k] = (gCount[k] || 0) + 1;
+    }
+  });
+
+  for (var u = 1; u <= UNIT_COUNT; u++) {
+    GLEVELS.forEach(function (l) {
+      var n = gCount[u + '/' + l.key] || 0;
+      if (n < MIN_GRAMMAR) warn('単元' + u + '（' + Quiz.unitName(u) + '）の' + l.label + '：' + n + '問です（' + MIN_GRAMMAR + '問以上にしてください）。');
+    });
+  }
+
+  // ---------- 出題のしくみのテスト ----------
+  // すべての単語を、両方の向きで3回ずつ出題してみて、選択肢が正しくつくれるか調べる
+  var testCount = 0;
+  var relaxedCount = 0;
+  var crossCount = 0;
+  if (Quiz) {
+    WORDS.forEach(function (w) {
+      if (!levelLabel[w.level] || blank(w.word) || blank(w.meaning)) return;
+      ['en2ja', 'ja2en'].forEach(function (dir) {
+        for (var r = 0; r < 3; r++) {
+          var q = Quiz.buildWordQuestion(w, dir);
+          testCount++;
+          var tag = label(w) + '（' + (dir === 'en2ja' ? '英→日' : '日→英') + '）';
+          if (q.options.length !== 4) { err('出題テスト ' + tag + '：選択肢が' + q.options.length + '個です。'); break; }
+          var texts = {};
+          q.options.forEach(function (o) { texts[o.text.toLowerCase()] = true; });
+          if (Object.keys(texts).length !== 4) { err('出題テスト ' + tag + '：同じ選択肢があります。'); break; }
+          var corrects = q.options.filter(function (o) { return o.correct; });
+          if (corrects.length !== 1 || !q.options[q.correctIndex].correct) { err('出題テスト ' + tag + '：正解が1つになっていません。'); break; }
+          var bad = false;
+          q.options.forEach(function (o) {
+            if (o.correct) return;
+            var c = Quiz.getWord(o.wordId);
+            if (!c || c.id === w.id || c.word.toLowerCase() === w.word.toLowerCase() ||
+                Quiz.shareToken(Quiz.meaningTokens(c.meaning), Quiz.meaningTokens(w.meaning))) bad = true;
+          });
+          if (bad) { err('出題テスト ' + tag + '：正解と同じ意味・同じ単語の選択肢が入りました。'); break; }
+          if (q.relaxed) relaxedCount++;
+          if (q.crossLevel) crossCount++;
+        }
+      });
+    });
+    GRAMMAR.forEach(function (g) {
+      if (!Array.isArray(g.choices) || g.choices.length !== 4 || !(g.answer >= 0 && g.answer <= 3)) return;
+      var q = Quiz.buildGrammarQuestion(g);
+      testCount++;
+      if (q.options.length !== 4 || q.options[q.correctIndex].text !== g.choices[g.answer]) {
+        err('出題テスト ' + label(g) + '：シャッフル後の正解が合っていません。');
+      }
+    });
+    if (crossCount > 0) warn('出題テスト：同じ級の単語が足りず、他の級から選択肢を補った問題が ' + crossCount + ' 回ありました（単語が少ない級があります）。');
+  }
+
+  // ---------- 表示 ----------
+  var html = [];
+
+  html.push('<h2>単語（各級の語数・重複・必須項目・品詞）</h2>');
+  html.push('<div class="scroll"><table><tr><th>級</th><th>語数</th><th>判定</th><th>品詞の内訳</th></tr>');
+  wordRows.forEach(function (r) {
+    var posText = Quiz.POS_ORDER.filter(function (p) { return r.pos[p]; }).map(function (p) {
+      return Quiz.POS_LABEL[p] + ' ' + r.pos[p];
+    }).join(' ／ ');
+    html.push('<tr><td>' + esc(r.lv.label) + '</td><td class="num">' + r.n + '</td><td class="' + (r.short ? 'warn' : 'pass') +
+      '">' + (r.short ? '警告（' + MIN_WORDS + '語未満）' : 'OK') + '</td><td>' + esc(posText) + '</td></tr>');
+  });
+  html.push('</table></div>');
+
+  html.push('<h2>単語の並び（やさしい順）</h2>');
+  html.push('<p class="muted">データの並びが「順番どおり」の順番です。各級のはじめと終わりの単語を表示します。</p>');
+  html.push('<div class="scroll"><table><tr><th>級</th><th>はじめの8語</th><th>終わりの8語</th></tr>');
+  wordRows.forEach(function (r) {
+    function names(a) { return a.map(function (w) { return esc(w.word); }).join('、'); }
+    html.push('<tr><td>' + esc(r.lv.label) + '</td><td>' + names(r.list.slice(0, 8)) + '</td><td>' + names(r.list.slice(-8)) + '</td></tr>');
+  });
+  html.push('</table></div>');
+
+  html.push('<h2>文法（単元 × レベルの問題数）</h2>');
+  html.push('<div class="scroll"><table><tr><th>単元</th>');
+  GLEVELS.forEach(function (l) { html.push('<th>' + esc(l.label) + '</th>'); });
+  html.push('</tr>');
+  for (var uu = 1; uu <= UNIT_COUNT; uu++) {
+    html.push('<tr><td>' + uu + '. ' + esc(Quiz.unitName(uu)) + '</td>');
+    GLEVELS.forEach(function (l) {
+      var n = gCount[uu + '/' + l.key] || 0;
+      html.push('<td class="num ' + (n < MIN_GRAMMAR ? 'warn' : 'pass') + '">' + n + '</td>');
+    });
+    html.push('</tr>');
+  }
+  html.push('</table></div>');
+  html.push('<p>文法の合計：' + GRAMMAR.length + ' 問</p>');
+
+  html.push('<h2>出題のしくみのテスト</h2>');
+  html.push('<p>' + testCount + ' 回ぶんの問題をつくって、選択肢（4つ・すべて違う・正解は1つ・同じ意味を入れない）を確かめました。' +
+    (relaxedCount ? '（意味の重なりをゆるした問題：' + relaxedCount + '回）' : '') + '</p>');
+
+  function msgList(title, list, cls) {
+    var out = ['<h2>' + title + '（' + list.length + '件）</h2>'];
+    if (list.length === 0) {
+      out.push('<p class="pass">なし</p>');
+    } else {
+      out.push('<ul class="msgs">');
+      list.slice(0, 300).forEach(function (m) { out.push('<li class="' + cls + '">' + esc(m) + '</li>'); });
+      out.push('</ul>');
+      if (list.length > 300) out.push('<p class="muted">ほか ' + (list.length - 300) + ' 件</p>');
+    }
+    return out.join('');
+  }
+  html.push(msgList('エラー', errors, 'fail'));
+  html.push(msgList('警告', warnings, 'warn'));
+
+  document.getElementById('report').innerHTML = html.join('');
+  var summary = document.getElementById('summary');
+  summary.className = errors.length === 0 ? 'ok' : 'ng';
+  summary.setAttribute('data-errors', String(errors.length));
+  summary.setAttribute('data-warnings', String(warnings.length));
+  summary.innerHTML = (errors.length === 0 ? '○ エラー 0件' : '× エラー ' + errors.length + '件') +
+    '　警告 ' + warnings.length + '件' +
+    '<small>単語 ' + WORDS.length + '語 ／ 文法 ' + GRAMMAR.length + '問</small>';
+})();
+</script>
+</body>
+</html>

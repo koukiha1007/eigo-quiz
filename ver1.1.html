@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#2563eb">
+<title>中学英語クイズ</title>
+<!-- スマホのホーム画面に追加したとき、アプリのように全画面で開くための設定 -->
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="英語クイズ">
+<link rel="stylesheet" href="css/style_v1.1.css">
+</head>
+<body>
+<div id="app" class="app"></div>
+<noscript><p style="padding:16px">このアプリを使うには、ブラウザの JavaScript を ON にしてください。</p></noscript>
+
+<!-- 単語データ（やさしい順）。ver1.0 と共通 -->
+<script src="data/words_5.js"></script>
+<script src="data/words_4.js"></script>
+<script src="data/words_3.js"></script>
+<script src="data/words_p2.js"></script>
+
+<!-- 文法データ（単元ごと）。ver1.0 と共通 -->
+<script src="data/grammar/01_be.js"></script>
+<script src="data/grammar/02_present.js"></script>
+<script src="data/grammar/03_pronoun.js"></script>
+<script src="data/grammar/04_wh.js"></script>
+<script src="data/grammar/05_imperative.js"></script>
+<script src="data/grammar/06_present_prog.js"></script>
+<script src="data/grammar/07_past.js"></script>
+<script src="data/grammar/08_past_prog.js"></script>
+<script src="data/grammar/09_future.js"></script>
+<script src="data/grammar/10_modal.js"></script>
+<script src="data/grammar/11_infinitive.js"></script>
+<script src="data/grammar/12_gerund.js"></script>
+<script src="data/grammar/13_comparison.js"></script>
+<script src="data/grammar/14_conjunction.js"></script>
+<script src="data/grammar/15_passive.js"></script>
+<script src="data/grammar/16_perfect.js"></script>
+<script src="data/grammar/17_participle.js"></script>
+<script src="data/grammar/18_relative.js"></script>
+<script src="data/grammar/19_indirect.js"></script>
+<script src="data/grammar/20_subjunctive.js"></script>
+
+<!-- アプリ本体（ver1.1） -->
+<script src="js/storage_v1.1.js"></script>
+<script src="js/quiz_v1.1.js"></script>
+<script src="js/app_v1.1.js"></script>
+
+<!-- オフライン用（https で開いたときだけ。ダブルクリックで開いたときは何もしない） -->
+<script>
+if ('serviceWorker' in navigator && location.protocol === 'https:') {
+  navigator.serviceWorker.register('sw.js');
+}
+</script>
+</body>
+</html>
