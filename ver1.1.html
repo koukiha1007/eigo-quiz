@@ -4,6 +4,11 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#2563eb">
+<script>
+/* 公開サイト（https）で開いたときは、最新の ver1.2 へ移る（ホーム画面に追加した古い入口のため）。
+   ダブルクリックで開いたとき（file://）は、これまでどおり ver1.1 が動く。 */
+if (location.protocol === 'https:') location.replace('ver1.2.html' + location.search + location.hash);
+</script>
 <title>中学英語クイズ</title>
 <!-- スマホのホーム画面に追加したとき、アプリのように全画面で開くための設定 -->
 <link rel="manifest" href="manifest.webmanifest">

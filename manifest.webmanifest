@@ -1,9 +1,9 @@
 {
-  "name": "中学英語クイズ",
-  "short_name": "英語クイズ",
-  "description": "英検5級〜準2級の単語と中学文法の4択クイズ",
+  "name": "中学クイズ",
+  "short_name": "中学クイズ",
+  "description": "英検5級〜準2級の単語、中学文法、中学数学の4択クイズ",
   "lang": "ja",
-  "start_url": "./ver1.1.html",
+  "start_url": "./ver1.2.html",
   "scope": "./",
   "display": "standalone",
   "orientation": "portrait",

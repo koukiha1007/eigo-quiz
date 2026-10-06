@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>数学データチェック｜中学クイズ</title>
+<style>
+  body { margin: 0; padding: 16px; background: #f2f6fc; color: #1c2733; font: 16px/1.6 "Hiragino Sans", "Yu Gothic UI", "Meiryo", system-ui, sans-serif; }
+  main { max-width: 960px; margin: 0 auto; }
+  h1 { margin: 0 0 4px; font-size: 24px; }
+  h2 { margin: 28px 0 8px; font-size: 19px; border-left: 6px solid #0e7490; padding-left: 10px; }
+  p { margin: 4px 0; }
+  .muted { color: #566679; font-size: 14px; }
+  #summary { margin: 14px 0; padding: 14px 16px; border-radius: 12px; font-size: 22px; font-weight: 800; border: 2px solid; }
+  #summary.ok { background: #e4f6ea; border-color: #2fae63; color: #14803f; }
+  #summary.ng { background: #fdeaea; border-color: #e45757; color: #c62828; }
+  #summary small { display: block; font-size: 15px; font-weight: 400; color: #1c2733; }
+  table { border-collapse: collapse; width: 100%; background: #fff; margin: 6px 0; }
+  th, td { border: 1px solid #cfdaea; padding: 6px 10px; text-align: left; font-size: 15px; vertical-align: top; }
+  th { background: #e0f4f8; }
+  td.num { text-align: right; font-variant-numeric: tabular-nums; }
+  .pass { color: #14803f; font-weight: 700; }
+  .warn { color: #a15c00; font-weight: 700; background: #fff4d6; }
+  .fail { color: #c62828; font-weight: 700; background: #fdeaea; }
+  ul.msgs { margin: 6px 0; padding-left: 22px; }
+  ul.msgs li { margin: 2px 0; font-size: 15px; }
+  .scroll { overflow-x: auto; }
+  .sample { background: #fff; border: 1px solid #cfdaea; border-radius: 10px; padding: 8px 12px; margin: 6px 0; font-size: 17px; line-height: 2; }
+  .sample .ch { color: #566679; font-size: 15px; }
+  .m-minus { font-family: Arial, Roboto, "Helvetica Neue", "Segoe UI", sans-serif; }
+  .m-frac { display: inline-flex; flex-direction: column; align-items: center; vertical-align: middle; margin: 0 0.12em; line-height: 1.25; font-size: 0.95em; text-align: center; }
+  .m-num { padding: 0 0.22em 0.06em; border-bottom: 1.5px solid currentColor; }
+  .m-den { padding: 0.06em 0.22em 0; }
+  .m-rt { white-space: nowrap; }
+  .m-rt-body { border-top: 1.5px solid currentColor; padding: 0.03em 0.1em 0 0.06em; margin-left: -0.04em; }
+  sup.m-sup { font-size: 0.72em; line-height: 0; vertical-align: super; }
+</style>
+</head>
+<body>
+<main>
+  <h1>数学データチェック</h1>
+  <p class="muted">数学の問題データ（data/math/）をすべて読み込んで、次をチェックします。エラーが 0 件になるまで直してください。答えの計算が合っているかは、このページでは調べません（作成時に別の方法で全問を検算しています）。</p>
+  <div id="summary">チェック中…</div>
+  <div id="report"></div>
+</main>
+
+<script>window.__loadErrors = [];</script>
+<script src="../data/math/01_signed.js" onerror="window.__loadErrors.push('data/math/01_signed.js')"></script>
+<script src="../data/math/02_letters.js" onerror="window.__loadErrors.push('data/math/02_letters.js')"></script>
+<script src="../data/math/03_linear_eq.js" onerror="window.__loadErrors.push('data/math/03_linear_eq.js')"></script>
+<script src="../data/math/04_proportion.js" onerror="window.__loadErrors.push('data/math/04_proportion.js')"></script>
+<script src="../data/math/05_plane.js" onerror="window.__loadErrors.push('data/math/05_plane.js')"></script>
+<script src="../data/math/06_solid.js" onerror="window.__loadErrors.push('data/math/06_solid.js')"></script>
+<script src="../data/math/07_expressions.js" onerror="window.__loadErrors.push('data/math/07_expressions.js')"></script>
+<script src="../data/math/08_simultaneous.js" onerror="window.__loadErrors.push('data/math/08_simultaneous.js')"></script>
+<script src="../data/math/09_linear_func.js" onerror="window.__loadErrors.push('data/math/09_linear_func.js')"></script>
+<script src="../data/math/10_angles.js" onerror="window.__loadErrors.push('data/math/10_angles.js')"></script>
+<script src="../data/math/11_congruence.js" onerror="window.__loadErrors.push('data/math/11_congruence.js')"></script>
+<script src="../data/math/12_probability.js" onerror="window.__loadErrors.push('data/math/12_probability.js')"></script>
+<script src="../data/math/13_data.js" onerror="window.__loadErrors.push('data/math/13_data.js')"></script>
+<script src="../data/math/14_expand_factor.js" onerror="window.__loadErrors.push('data/math/14_expand_factor.js')"></script>
+<script src="../data/math/15_sqrt.js" onerror="window.__loadErrors.push('data/math/15_sqrt.js')"></script>
+<script src="../data/math/16_quadratic_eq.js" onerror="window.__loadErrors.push('data/math/16_quadratic_eq.js')"></script>
+<script src="../data/math/17_quadratic_func.js" onerror="window.__loadErrors.push('data/math/17_quadratic_func.js')"></script>
+<script src="../data/math/18_similar.js" onerror="window.__loadErrors.push('data/math/18_similar.js')"></script>
+<script src="../data/math/19_circle.js" onerror="window.__loadErrors.push('data/math/19_circle.js')"></script>
+<script src="../data/math/20_pythagoras.js" onerror="window.__loadErrors.push('data/math/20_pythagoras.js')"></script>
+<script src="../js/mathtext_v1.2.js" onerror="window.__loadErrors.push('js/mathtext_v1.2.js')"></script>
+<script src="../js/quiz_v1.2.js" onerror="window.__loadErrors.push('js/quiz_v1.2.js')"></script>
+<script>
+(function () {
+  'use strict';
+
+  var MIN_PER_SET = 10;   // 1単元×1レベルの最低問題数
+
+  var MATH = window.MATH || [];
+  var Quiz = window.EIQQuiz;
+  var Fmt = window.EIQMath;
+  var errors = [];
+  var warnings = [];
+
+  function err(m) { errors.push(m); }
+  function warn(m) { warnings.push(m); }
+  function esc(s) {
+    return String(s).replace(/[&<>"']/g, function (c) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+    });
+  }
+  function blank(v) { return typeof v !== 'string' || v.trim() === ''; }
+  function label(m) { return m && m.id ? m.id : '(idなし)'; }
+  function plainText(html) { var d = document.createElement('div'); d.innerHTML = html; return d.textContent; }
+
+  window.__loadErrors.forEach(function (f) { err('ファイルを読み込めませんでした：' + f); });
+  if (!Quiz) err('js/quiz_v1.2.js を読み込めませんでした。');
+  if (!Fmt) err('js/mathtext_v1.2.js を読み込めませんでした。');
+
+  var UNIT_COUNT = Quiz ? Quiz.MATH_UNITS.length : 20;
+  var LEVELS = Quiz ? Quiz.GRAMMAR_LEVELS : [];
+
+  var idSeen = {};
+  var count = {};   // 'unit/level' -> 問題数
+  var qSeen = {};
+
+  MATH.forEach(function (m) {
+    var tag = label(m);
+    ['id', 'level', 'question', 'explanation'].forEach(function (f) {
+      if (blank(m[f])) err(tag + '：' + f + ' が空です。');
+    });
+    var unitOk = typeof m.unit === 'number' && m.unit >= 1 && m.unit <= UNIT_COUNT && m.unit % 1 === 0;
+    var level = LEVELS.filter(function (l) { return l.key === m.level; })[0];
+    if (!unitOk) err(tag + '：unit が 1〜' + UNIT_COUNT + ' の整数ではありません（' + m.unit + '）。');
+    if (!level) err(tag + '：level が "normal" "advanced" "hard" のどれでもありません（' + m.level + '）。');
+
+    if (!blank(m.id)) {
+      var mm = /^m(\d{2})-([nah])-(\d{2,})$/.exec(m.id);
+      if (!mm) {
+        err(tag + '：id の形式が正しくありません（m01-n-01 の形）。');
+      } else {
+        if (unitOk && Number(mm[1]) !== m.unit) err(tag + '：id の単元番号と unit が合っていません。');
+        if (level && mm[2] !== level.code) err(tag + '：id のレベル文字と level が合っていません。');
+      }
+      if (idSeen[m.id]) err('id が重複しています：' + m.id);
+      idSeen[m.id] = true;
+    }
+
+    var cs = m.choices;
+    if (!Array.isArray(cs) || cs.length !== 4) {
+      err(tag + '：choices が4つではありません。');
+    } else {
+      if (cs.some(blank)) err(tag + '：choices に空の選択肢があります。');
+      var uniq = {};
+      cs.forEach(function (c) { var t = String(c).trim(); uniq[t] = (uniq[t] || 0) + 1; });
+      if (Object.keys(uniq).length < 4) err(tag + '：choices に同じ選択肢があります。');
+    }
+    if (!(typeof m.answer === 'number' && m.answer % 1 === 0 && m.answer >= 0 && m.answer <= 3)) {
+      err(tag + '：answer が 0〜3 の整数ではありません（' + m.answer + '）。');
+    }
+
+    // 数式の書き方（{ } ^ √ の間違い）と、画面に出したときの形
+    if (Fmt) {
+      var fields = [['問題文', m.question], ['解説', m.explanation]];
+      if (Array.isArray(cs)) cs.forEach(function (c, i) { fields.push(['選択肢' + (i + 1), c]); });
+      fields.forEach(function (f) {
+        if (blank(f[1])) return;
+        Fmt.problems(f[1]).forEach(function (p) { err(tag + '：' + f[0] + 'の書き方に問題があります（' + p + '）。'); });
+        var html = Fmt.html(f[1]);
+        var box = document.createElement('div');
+        box.innerHTML = html;
+        if (/[{}^]/.test(box.textContent)) err(tag + '：' + f[0] + 'に、数式の記号（{ } ^）がそのまま表示されます。');
+        var fr = box.querySelectorAll('.m-frac');
+        for (var i = 0; i < fr.length; i++) {
+          if (fr[i].children.length !== 2 || !fr[i].children[0].textContent.trim() || !fr[i].children[1].textContent.trim()) {
+            err(tag + '：' + f[0] + 'に、上か下が空の分数があります。');
+          }
+        }
+        var rt = box.querySelectorAll('.m-rt-body');
+        for (var j = 0; j < rt.length; j++) if (!rt[j].textContent.trim()) err(tag + '：' + f[0] + 'に、中身が空の根号があります。');
+      });
+    }
+
+    if (!blank(m.question) && Array.isArray(cs)) {
+      var qk = m.question + '|' + cs.slice().sort().join('/');
+      if (qSeen[qk]) warn(tag + '：' + qSeen[qk] + ' と、問題・選択肢が同じです。');
+      qSeen[qk] = tag;
+    }
+    if (unitOk && level) {
+      var k = m.unit + '/' + m.level;
+      count[k] = (count[k] || 0) + 1;
+    }
+  });
+
+  for (var u = 1; u <= UNIT_COUNT; u++) {
+    LEVELS.forEach(function (l) {
+      var n = count[u + '/' + l.key] || 0;
+      if (n < MIN_PER_SET) warn('単元' + u + '（' + (Quiz ? Quiz.MATH_UNITS[u - 1] : '') + '）の' + l.label + '：' + n + '問です（' + MIN_PER_SET + '問以上にしてください）。');
+    });
+  }
+
+  // ---------- 出題のしくみのテスト ----------
+  var testCount = 0;
+  if (Quiz) {
+    MATH.forEach(function (m) {
+      if (!Array.isArray(m.choices) || m.choices.length !== 4 || !(m.answer >= 0 && m.answer <= 3)) return;
+      for (var r = 0; r < 3; r++) {
+        var q = Quiz.buildMathQuestion(m);
+        testCount++;
+        var corrects = q.options.filter(function (o) { return o.correct; });
+        if (q.options.length !== 4 || corrects.length !== 1 || q.options[q.correctIndex].text !== m.choices[m.answer]) {
+          err('出題テスト ' + label(m) + '：シャッフル後の正解が合っていません。');
+          break;
+        }
+      }
+    });
+  }
+
+  // ---------- 表示 ----------
+  var html = [];
+  html.push('<h2>単元 × レベルの問題数</h2>');
+  html.push('<div class="scroll"><table><tr><th>単元</th><th>学年</th>');
+  LEVELS.forEach(function (l) { html.push('<th>' + esc(l.label) + '</th>'); });
+  html.push('</tr>');
+  for (var uu = 1; uu <= UNIT_COUNT; uu++) {
+    html.push('<tr><td>' + uu + '. ' + esc(Quiz ? Quiz.MATH_UNITS[uu - 1] : '') + '</td><td>' + esc(Quiz ? Quiz.MATH_GRADES[uu - 1] : '') + '</td>');
+    LEVELS.forEach(function (l) {
+      var n = count[uu + '/' + l.key] || 0;
+      html.push('<td class="num ' + (n < MIN_PER_SET ? 'warn' : 'pass') + '">' + n + '</td>');
+    });
+    html.push('</tr>');
+  }
+  html.push('</table></div>');
+  html.push('<p>数学の合計：' + MATH.length + ' 問</p>');
+
+  html.push('<h2>出題のしくみのテスト</h2>');
+  html.push('<p>' + testCount + ' 回ぶんの問題をつくって、選択肢（4つ・正解は1つ・シャッフル後も正解が合っている）を確かめました。</p>');
+
+  // 画面での見え方の見本（各単元のはじめの1問）
+  if (Fmt) {
+    html.push('<h2>表示の見本（各単元・普通レベルの1問め）</h2>');
+    html.push('<p class="muted">分数・べき・ルートが、正しく表示されているか、目で確かめてください。</p>');
+    for (var s = 1; s <= UNIT_COUNT; s++) {
+      var first = MATH.filter(function (m) { return m.unit === s && m.level === 'normal'; })[0];
+      if (!first) continue;
+      html.push('<div class="sample"><div class="ch">' + s + '. ' + esc(Quiz.MATH_UNITS[s - 1]) + '（' + first.id + '）</div>' +
+        Fmt.html(first.question) +
+        '<div class="ch">' + first.choices.map(function (c, i) { return (i === first.answer ? '◎ ' : '') + Fmt.html(c); }).join('　／　') + '</div></div>');
+    }
+  }
+
+  function msgList(title, list, cls) {
+    var out = ['<h2>' + title + '（' + list.length + '件）</h2>'];
+    if (list.length === 0) {
+      out.push('<p class="pass">なし</p>');
+    } else {
+      out.push('<ul class="msgs">');
+      list.slice(0, 300).forEach(function (m) { out.push('<li class="' + cls + '">' + esc(m) + '</li>'); });
+      out.push('</ul>');
+      if (list.length > 300) out.push('<p class="muted">ほか ' + (list.length - 300) + ' 件</p>');
+    }
+    return out.join('');
+  }
+  html.push(msgList('エラー', errors, 'fail'));
+  html.push(msgList('警告', warnings, 'warn'));
+
+  document.getElementById('report').innerHTML = html.join('');
+  var summary = document.getElementById('summary');
+  summary.className = errors.length === 0 ? 'ok' : 'ng';
+  summary.setAttribute('data-errors', String(errors.length));
+  summary.setAttribute('data-warnings', String(warnings.length));
+  summary.innerHTML = (errors.length === 0 ? '○ エラー 0件' : '× エラー ' + errors.length + '件') +
+    '　警告 ' + warnings.length + '件' +
+    '<small>数学 ' + MATH.length + '問</small>';
+})();
+</script>
+</body>
+</html>
